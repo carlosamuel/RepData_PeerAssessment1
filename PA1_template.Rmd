@@ -1,0 +1,85 @@
+# Peer Assessment 1
+By Carlos Figueroa
+
+Setting Global Options for always show code:
+
+```{r global_options, include=TRUE}
+knitr::opts_chunk$set(echo=TRUE)
+```
+
+Reading data from working directory:
+
+```{r readingdata}
+data<-read.csv("repdata-data-activity\\activity.csv", na.strings="NA")
+```
+
+Data summary (includes count of NA's):
+
+```{r datasummary}
+summary(data)
+str(data)
+```
+
+Summarizing steps by day and plotting histogram (Choosing not to ignore NA's since we can or cannot):
+
+```{r summarizesteps}
+library(plyr)
+y<-ddply(data, ~date, summarise, sum=sum(steps))
+y
+hist(y$sum)
+```
+
+Summarizing steps by day and calculating mean and median for each one (Choosing not to ignore NA's since we can or cannot):
+
+```{r meansteps}
+x<-ddply(data, ~date, summarise, mean=mean(steps), median=median(steps))
+x
+```
+
+Summarizing steps by 5-minute interval and calculating mean (changing NA's to zeros which counts for the "Imputing missing values" and creating a new data set ): 
+
+```{r 5minmean}
+newdata<-data
+summary(newdata)
+## Same as the original data
+newdata[is.na(newdata)]<-0
+z<-ddply(newdata, ~interval, summarise, mean=mean(steps))
+z
+```
+
+Plotting mean steps by interval:
+
+```{r meanstepsinterval}
+with(z, {plot(interval, mean, type="l")})
+```
+
+The maximum mean is on interval 835
+
+The total number of NA's was already informed in the summary after reading data, there are 2,304 lines with NA, a new set with imputation was created also prevously for summarizing data by interval and step average so will go straight to the new mean, median and histogram
+
+
+Strategy
+I replaced all NA's with zeros because I assume they came from a non measure caused by inmovility, i.e. the test subject was still for a long time inducing a measurement error which caused NA instead of zero
+
+
+Histogram
+
+```{r newsummarizesteps}
+y2<-ddply(newdata, ~date, summarise, sum=sum(steps))
+y2
+hist(y2$sum)
+```
+
+
+Mean and median
+
+```{r newmeansteps}
+x2<-ddply(newdata, ~date, summarise, mean=mean(steps), median=median(steps))
+x2
+```
+
+There is no difference because of the specific way I did Things (sorry, didnt' read the whole assignment first) but as we replace NA's with imputed values above or below the mean we slightly increase or decrase it (in this case, as I used zeros, everything decrease)
+
+
+Since Im in a hurry i will skip the last part, sorry, my bad! :( 
+
